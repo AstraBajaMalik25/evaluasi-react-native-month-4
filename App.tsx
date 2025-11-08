@@ -1,279 +1,92 @@
-import React, { useRef, useState } from "react";
-import { Alert } from "react-native";
-import {
-  SafeAreaView,
-  ScrollView,
-  View,
-  Text,
-  Image,
-  TouchableOpacity,
-  TextInput,
-  StyleSheet,
-} from "react-native";
+import React from 'react';
+import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, StatusBar } from 'react-native';
 
-type Product = {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  description: string;
-};
+const PRODUCTS = [
+  { id: '1', name: 'Brake Disc', price: 250000, image: 'https://images.unsplash.com/photo-1616338806320-98a501aa9a77' },
+  { id: '2', name: 'Engine Oil', price: 120000, image: 'https://images.unsplash.com/photo-1581091215367-59ab6c1b3c2b' },
+  { id: '3', name: 'Spark Plug', price: 60000, image: 'https://images.unsplash.com/photo-1607860108855-f1b9fcd7c8a7' },
+  { id: '4', name: 'Headlight Bulb', price: 95000, image: 'https://images.unsplash.com/photo-1612817159949-2e90a0e53a26' },
+];
 
-const App: React.FC = () => {
-  // product state
-  const [products, setProducts] = useState<Product[]>([
-    {
-      id: 1,
-      name: "Wireless Headphones",
-      price: 59,
-      image:
-        "https://macstore.id/wp-content/uploads/2024/01/MQTP3.jpeg",
-      description: "High-quality sound and comfortable over-ear design.",
-    },
-    {
-      id: 2,
-      name: "Smart Watch",
-      price: 129,
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAML-SZB3WrH_uffWnDTD7KMMVxDTXbrySjg&s",
-      description: "Track your fitness, heart rate, and notifications.",
-    },
-    {
-      id: 3,
-      name: "Bluetooth Speaker",
-      price: 79,
-      image:
-        "https://images.tokopedia.net/img/JFrBQq/2023/6/14/413e1750-d1d8-441c-a2bb-3fde9e21a384.jpg",
-      description: "Portable and waterproof with great bass performance.",
-    },
-        {
-      id: 4,
-      name: "Smart TV",
-      price: 79,
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXIjM-dB8DmMT4IGa2PI7L2uOY8rDmI36v-w&s",
-      description: "4K Smart TV, featuring voice control and built-in apps for all your favorite content.",
-    },
-            {
-      id: 5,
-      name: "larry the wizard cat",
-      price: 79,
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQsa665g6nPKWYeg3MawEo6pKBAU3zgBSlRbkhamn585AH7EwW1aj3Ht6xT_XaXMM4jYJg&usqp=CAU",
-      description: "larry",
-    },
-    
-  ]);
-
-  // form state
-  const [form, setForm] = useState({
-    name: "",
-    price: "",
-    image: "",
-    description: "",
-  });
-
-  // refs for navigation
-  const scrollRef = useRef<ScrollView | null>(null);
-  const productRef = useRef<View | null>(null);
-  const formRef = useRef<View | null>(null);
-
-  // scroll handler
-  const scrollToSection = (ref: React.RefObject<View | null>) => {
-    if (ref.current && scrollRef.current) {
-      ref.current.measure((x, y, width, height, pageX, pageY) => {
-        scrollRef.current?.scrollTo({ y: pageY - 80, animated: true });
-      });
-    }
-  };
-
-  // add product
-  const handleAddProduct = () => {
-    if (!form.name || !form.price || !form.image) {
-      Alert.alert("Success", "Product added!");
-      return;
-    }
-
-    const newProduct: Product = {
-      id: Date.now(),
-      name: form.name,
-      price: Number(form.price),
-      image: form.image,
-      description: form.description,
-    };
-
-    setProducts((prev) => [...prev, newProduct]);
-    setForm({ name: "", price: "", image: "", description: "" });
-    scrollToSection(productRef);
-  };
+const App = () => {
+  const renderItem = ({ item }) => (
+    <View style={styles.card}>
+      <Image source={{ uri: item.image }} style={styles.image} />
+      <View style={styles.info}>
+        <Text style={styles.name}>{item.name}</Text>
+        <Text style={styles.price}>Rp {item.price.toLocaleString('id-ID')}</Text>
+        <TouchableOpacity style={styles.button}>
+          <Text style={styles.buttonText}>Buy</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
   return (
-    <SafeAreaView style={styles.container}>
-      {/* Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>@astraastore</Text>
-        <View style={styles.navButtons}>
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => scrollToSection(productRef)}
-          >
-            <Text style={styles.navButtonText}>Products</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.navButton}
-            onPress={() => scrollToSection(formRef)}
-          >
-            <Text style={styles.navButtonText}>Add Product</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-
-      {/* Scrollable content */}
-      <ScrollView ref={scrollRef} contentContainerStyle={styles.scrollContent}>
-        {/* Product List */}
-        <View ref={productRef}>
-          <Text style={styles.sectionTitle}>Available Products</Text>
-          {products.map((p) => (
-            <View key={p.id} style={styles.card}>
-              <Image source={{ uri: p.image }} style={styles.image} />
-              <View style={{ flex: 1, marginLeft: 12 }}>
-                <Text style={styles.productName}>{p.name}</Text>
-                <Text style={styles.productDesc}>{p.description}</Text>
-                <Text style={styles.productPrice}>${p.price}</Text>
-              </View>
-            </View>
-          ))}
-        </View>
-
-        {/* Add Product Form */}
-        <View ref={formRef} style={{ marginTop: 40 }}>
-          <Text style={styles.sectionTitle}>Add New Product</Text>
-
-          <TextInput
-            placeholder="Product Name"
-            value={form.name}
-            onChangeText={(v) => setForm({ ...form, name: v })}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Price"
-            keyboardType="numeric"
-            value={form.price}
-            onChangeText={(v) => setForm({ ...form, price: v })}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Image URL"
-            value={form.image}
-            onChangeText={(v) => setForm({ ...form, image: v })}
-            style={styles.input}
-          />
-          <TextInput
-            placeholder="Description (optional)"
-            multiline
-            value={form.description}
-            onChangeText={(v) => setForm({ ...form, description: v })}
-            style={[styles.input, { height: 80 }]}
-          />
-
-          <TouchableOpacity style={styles.addButton} onPress={handleAddProduct}>
-            <Text style={styles.addButtonText}>Add Product</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      <Text style={styles.title}>SparePart Store</Text>
+      <FlatList
+        data={PRODUCTS}
+        renderItem={renderItem}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.list}
+      />
+    </View>
   );
 };
 
-// styling
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F4F4F4",
-  },
-  header: {
-    backgroundColor: "#222",
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    backgroundColor: '#0D0D0D',
+    paddingHorizontal: 16,
+    paddingTop: 50,
   },
   title: {
-    color: "#fff",
-    fontSize: 20,
-    fontWeight: "700",
+    color: '#fff',
+    fontSize: 28,
+    fontWeight: '700',
+    textAlign: 'center',
+    marginBottom: 20,
   },
-  navButtons: {
-    flexDirection: "row",
-    gap: 12,
-  },
-  navButton: {
-    backgroundColor: "#444",
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-  },
-  navButtonText: {
-    color: "#fff",
-    fontSize: 14,
-  },
-  scrollContent: {
-    padding: 20,
-  },
-  sectionTitle: {
-    fontSize: 22,
-    fontWeight: "700",
-    marginBottom: 16,
+  list: {
+    paddingBottom: 40,
   },
   card: {
-    backgroundColor: "#fff",
-    borderRadius: 12,
+    backgroundColor: '#1A1A1A',
+    borderRadius: 16,
+    overflow: 'hidden',
     marginBottom: 16,
-    flexDirection: "row",
-    padding: 12,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
+    elevation: 5,
   },
   image: {
-    width: 90,
-    height: 90,
-    borderRadius: 10,
+    width: '100%',
+    height: 180,
   },
-  productName: {
+  info: {
+    padding: 12,
+  },
+  name: {
+    color: '#fff',
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
   },
-  productDesc: {
-    color: "#666",
-    marginTop: 4,
+  price: {
+    color: '#aaa',
+    fontSize: 14,
+    marginVertical: 4,
   },
-  productPrice: {
-    marginTop: 6,
-    color: "#2E8B57",
-    fontWeight: "700",
-  },
-  input: {
-    backgroundColor: "#fff",
+  button: {
+    backgroundColor: '#E50914',
+    paddingVertical: 8,
     borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    marginBottom: 12,
-    fontSize: 16,
+    alignItems: 'center',
+    marginTop: 8,
   },
-  addButton: {
-    backgroundColor: "#2E8B57",
-    padding: 14,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  addButtonText: {
-    color: "#fff",
-    fontWeight: "700",
-    fontSize: 16,
+  buttonText: {
+    color: '#fff',
+    fontWeight: '600',
   },
 });
 
