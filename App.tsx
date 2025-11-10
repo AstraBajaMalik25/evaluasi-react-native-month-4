@@ -1,93 +1,75 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, Image, TouchableOpacity, StatusBar } from 'react-native';
+import React from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { View, Text, SafeAreaView, StyleSheet, Button } from "react-native";
+import ProductCatalogScreen from "./screens/ProductCatalogScreen"; // ⬅️ file kamu dipindah ke sini
 
-const PRODUCTS = [
-  { id: '1', name: 'Brake Disc', price: 250000, image: 'https://images.unsplash.com/photo-1616338806320-98a501aa9a77' },
-  { id: '2', name: 'Engine Oil', price: 120000, image: 'https://images.unsplash.com/photo-1581091215367-59ab6c1b3c2b' },
-  { id: '3', name: 'Spark Plug', price: 60000, image: 'https://images.unsplash.com/photo-1607860108855-f1b9fcd7c8a7' },
-  { id: '4', name: 'Headlight Bulb', price: 95000, image: 'https://images.unsplash.com/photo-1612817159949-2e90a0e53a26' },
-];
+// --- Dummy onboarding screens ---
+const Onboarding1 = ({ navigation }: any) => (
+  <SafeAreaView style={styles.center}>
+    <Text style={styles.title}>Welcome to SparePart Store!</Text>
+    <Button title="Next" onPress={() => navigation.navigate("Onboarding2")} />
+  </SafeAreaView>
+);
 
-const App = () => {
-  const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <Image source={{ uri: item.image }} style={styles.image} />
-      <View style={styles.info}>
-        <Text style={styles.name}>{item.name}</Text>
-        <Text style={styles.price}>Rp {item.price.toLocaleString('id-ID')}</Text>
-        <TouchableOpacity style={styles.button}>
-          <Text style={styles.buttonText}>Buy</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
+const Onboarding2 = ({ navigation }: any) => (
+  <SafeAreaView style={styles.center}>
+    <Text style={styles.title}>Find the best spare parts for your vehicle!</Text>
+    <Button title="Start Shopping" onPress={() => navigation.replace("MainTabs")} />
+  </SafeAreaView>
+);
 
+// --- Profile screen ---
+const ProfileScreen = () => (
+  <SafeAreaView style={styles.center}>
+    <Text style={styles.title}>Profile Screen</Text>
+  </SafeAreaView>
+);
+
+// --- Bottom tab navigation ---
+const Tab = createBottomTabNavigator();
+
+function MainTabs() {
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
-      <Text style={styles.title}>SparePart Store</Text>
-      <FlatList
-        data={PRODUCTS}
-        renderItem={renderItem}
-        keyExtractor={item => item.id}
-        contentContainerStyle={styles.list}
-      />
-    </View>
+    <Tab.Navigator screenOptions={{ headerShown: false }}>
+      <Tab.Screen name="Catalog" component={ProductCatalogScreen} />
+      <Tab.Screen name="Profile" component={ProfileScreen} />
+    </Tab.Navigator>
   );
-};
+}
 
+// --- Stack navigation ---
+const Stack = createNativeStackNavigator();
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName="Onboarding1"
+        screenOptions={{ headerShown: false }}
+      >
+        <Stack.Screen name="Onboarding1" component={Onboarding1} />
+        <Stack.Screen name="Onboarding2" component={Onboarding2} />
+        <Stack.Screen name="MainTabs" component={MainTabs} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
+
+// --- styling ---
 const styles = StyleSheet.create({
-  container: {
+  center: {
     flex: 1,
-    backgroundColor: '#0D0D0D',
-    paddingHorizontal: 16,
-    paddingTop: 50,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#0D0D0D",
   },
   title: {
-    color: '#fff',
-    fontSize: 28,
-    fontWeight: '700',
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  list: {
-    paddingBottom: 40,
-  },
-  card: {
-    backgroundColor: '#1A1A1A',
-    borderRadius: 16,
-    overflow: 'hidden',
-    marginBottom: 16,
-    elevation: 5,
-  },
-  image: {
-    width: '100%',
-    height: 180,
-  },
-  info: {
-    padding: 12,
-  },
-  name: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  price: {
-    color: '#aaa',
-    fontSize: 14,
-    marginVertical: 4,
-  },
-  button: {
-    backgroundColor: '#E50914',
-    paddingVertical: 8,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: '600',
+    fontSize: 22,
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
+    paddingHorizontal: 20,
   },
 });
-
-export default App;
